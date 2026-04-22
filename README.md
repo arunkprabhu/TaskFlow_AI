@@ -9,10 +9,22 @@
 ![AI](https://img.shields.io/badge/AI-Ollama%20(Local)-orange)
 ![Integration](https://img.shields.io/badge/Integration-Monday.com-red)
 
+## ⚡ **NEW: 3-5x Faster Extraction!**
+
+Recent optimizations have dramatically improved performance:
+- **3-7 seconds** average extraction time (was 15-25s)
+- **Instant** results for cached inputs
+- **All formats** supported automatically (markdown, plain text, bullets, etc.)
+- **Smart preprocessing** focuses on action items only
+
+📖 See [PERFORMANCE.md](PERFORMANCE.md) for full details
+
 ## 🎯 Features
 
-- **🤖 Local AI Processing** - Uses Ollama (llama3/mistral) to extract tasks privately
+- **🤖 Local AI Processing** - Uses Ollama (llama3.2:1b) to extract tasks privately on your machine
 - **📝 Smart Task Extraction** - Identifies action items, assignees, due dates, and priorities
+- **⚡ Lightning Fast** - 3-5x faster extraction with caching (3-7s average, instant for duplicates)
+- **📄 Multi-Format Support** - Handles plain text, markdown, bullets, checkboxes, and more automatically
 - **✏️ Editable Preview** - Review and edit all tasks before pushing to Monday.com
 - **🎨 Modern UI** - Clean Material-UI interface with real-time updates
 - **🔒 Secure** - API tokens never exposed to frontend, local AI processing

@@ -101,7 +101,7 @@ const MondayPushBackdrop: React.FC<MondayPushBackdropProps> = ({ open, total }) 
           variant="h6"
           sx={{ color: '#fff', fontWeight: 700, letterSpacing: 0.5 }}
         >
-          Pushing to Monday.com…
+          Pushing tasks…
         </Typography>
 
         {/* Counter */}

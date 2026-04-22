@@ -32,8 +32,9 @@ TASK_SIGNALS = (
     r"\b(?:TODO|ACTION ITEM|ACTION|TASK|URGENT|CRITICAL|ASAP|BLOCKER)\b[:\-]\s+"
 )
 
-# Line start prefix: handles "- ", "* ", "1. ", bullets, or sentence start
-LINE_PREFIX = r"(?:^[\s\-\*•\d\.]*|\. )\s*"
+# Line start prefix: handles "- ", "* ", "1. ", bullets, sentence start,
+# AND optional inline priority tags like [HIGH PRIORITY], [CRITICAL], etc.
+LINE_PREFIX = r"(?:^[\s\-\*•\d\.]*|\. )\s*(?:\[[^\]]*\]\s*)?"
 
 # Patterns for "Person will/should/needs to do something"
 PERSON_ACTION_PATTERN = re.compile(
@@ -218,7 +219,7 @@ class PythonTaskExtractor:
         "october", "november", "december",
     }
 
-    def _paragraph_context(self, text: str, end_pos: int, chars: int = 250) -> str:
+    def _paragraph_context(self, text: str, end_pos: int, chars: int = 500) -> str:
         """Return text from end_pos up to chars characters but stop at a blank line."""
         window = text[end_pos:end_pos + chars]
         # Stop at double newline (paragraph break)

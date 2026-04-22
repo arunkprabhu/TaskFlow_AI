@@ -28,14 +28,12 @@ export const useTaskExtraction = (): UseTaskExtractionResult => {
     setIsLoading(true);
     setError(null);
 
-    try {
-      const request: TaskExtractionRequest = {
-        meeting_notes: meetingNotes,
-        options: {
-          confidence_threshold: 0.3,
-        },
-      };
+    const request: TaskExtractionRequest = {
+      meeting_notes: meetingNotes,
+      options: { confidence_threshold: 0.3 },
+    };
 
+    try {
       const response = await extractTasks(request);
       setTasks(response.tasks);
 
@@ -45,18 +43,31 @@ export const useTaskExtraction = (): UseTaskExtractionResult => {
     } catch (err: any) {
       console.error('Task extraction failed:', err);
 
-      let errorMessage = 'Failed to extract tasks. ';
+      // Auto-retry once on network error (backend may have just restarted)
+      const isNetworkErr = err.message?.includes('Network Error') || err.code === 'ERR_NETWORK';
+      if (isNetworkErr) {
+        try {
+          await new Promise(r => setTimeout(r, 2000));
+          const retry = await extractTasks(request);
+          setTasks(retry.tasks);
+          if (retry.tasks.length === 0) {
+            setError('No tasks found in the meeting notes. Try adding clearer action items.');
+          }
+          return;
+        } catch (_) { /* fall through to error display */ }
+      }
 
+      let errorMessage = '';
       if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
-        errorMessage += 'The request timed out. Please try again.';
+        errorMessage = 'Request timed out. Please try again.';
       } else if (err.response?.status === 404) {
-        errorMessage += 'API endpoint not found. Please check the backend is running.';
+        errorMessage = 'API endpoint not found. Ensure the backend is running on port 8000.';
       } else if (err.response?.status === 500) {
-        errorMessage += err.response?.data?.detail || 'Server error occurred.';
-      } else if (err.message?.includes('Network Error')) {
-        errorMessage += 'Cannot connect to backend. Make sure it is running on port 8000.';
+        errorMessage = err.response?.data?.detail || 'Server error. Check backend logs.';
+      } else if (isNetworkErr) {
+        errorMessage = 'Cannot reach the backend on port 8000. Please restart it and try again.';
       } else {
-        errorMessage += err.response?.data?.detail || 'Please try again.';
+        errorMessage = err.response?.data?.detail || 'Extraction failed. Please try again.';
       }
 
       setError(errorMessage);

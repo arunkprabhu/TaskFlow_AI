@@ -2,23 +2,27 @@
  * Main Application Component
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Box,
   Typography,
   Alert,
+  AlertTitle,
   Snackbar,
   AppBar,
   Toolbar,
   Chip,
   IconButton,
+  Button,
 } from '@mui/material';
 import {
   AutoAwesome as AIIcon,
   CheckCircle as CheckIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
+  WbSunny as SunIcon,
+  NightsStay as MoonIcon,
+  Refresh as RefreshIcon,
+  WifiOff as WifiOffIcon,
 } from '@mui/icons-material';
 import MeetingNotesInput from './components/MeetingNotesInput';
 import TaskPreviewTable from './components/TaskPreviewTable';
@@ -36,6 +40,7 @@ import { getHealthStatus } from './services/api';
 
 function App() {
   const { mode, toggleTheme } = useThemeContext();
+  const tableRef = useRef<HTMLDivElement>(null);
   const [editableTasks, setEditableTasks] = useState<Task[]>([]);
   const [pushedSuccessfully, setPushedSuccessfully] = useState<boolean>(false);
   const [healthStatus, setHealthStatus] = useState<string>('unknown');
@@ -65,6 +70,10 @@ function App() {
     if (tasks.length > 0) {
       setEditableTasks(tasks);
       setPushedSuccessfully(false);
+      // Smooth scroll to table after a brief render delay
+      setTimeout(() => {
+        tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
     }
   }, [tasks]);
 
@@ -79,17 +88,22 @@ function App() {
     }
   }, [pushSuccess]);
 
-  // Check backend health and connection status on mount
+  const [backendDown, setBackendDown] = useState(false);
+
+  // Check backend health on mount and poll every 15 s
   useEffect(() => {
     const checkHealth = async () => {
       try {
         const status = await getHealthStatus();
         setHealthStatus(status.status);
-      } catch (error) {
+        setBackendDown(false);
+      } catch {
         setHealthStatus('unhealthy');
+        setBackendDown(true);
       }
     };
     checkHealth();
+    const interval = setInterval(checkHealth, 15000);
 
     // Check if PM tool is connected (check localStorage)
     const connectedTool = localStorage.getItem('pm_tool_connected');
@@ -98,6 +112,8 @@ function App() {
     } else {
       setIsConnected(true);
     }
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleOpenPMConnect = () => {
@@ -162,7 +178,7 @@ function App() {
         flexDirection: 'column',
         background: mode === 'light'
           ? 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #fce7f3 100%)'
-          : 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #581c87 100%)',
+          : 'linear-gradient(135deg, #080d1a 0%, #050d1f 40%, #0a1020 70%, #080d1a 100%)',
         animation: 'gradientShift 15s ease infinite',
         '@keyframes gradientShift': {
           '0%, 100%': {
@@ -217,16 +233,28 @@ function App() {
               },
             }} 
           />
-          <Typography 
-            variant="h6" 
-            component="div" 
-            sx={{ 
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
               flexGrow: 1,
-              fontWeight: 700,
-              letterSpacing: '0.5px',
+              fontWeight: 800,
+              letterSpacing: '1px',
+              fontSize: { xs: '1.1rem', sm: '1.4rem' },
+              background: 'linear-gradient(90deg, #f97316, #ec4899, #a855f7, #3b82f6, #06b6d4, #10b981, #f97316)',
+              backgroundSize: '300% auto',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: 'shimmerTitle 4s linear infinite',
+              filter: 'drop-shadow(0 0 8px rgba(168,85,247,0.5))',
+              '@keyframes shimmerTitle': {
+                '0%': { backgroundPosition: '0% center' },
+                '100%': { backgroundPosition: '300% center' },
+              },
             }}
           >
-            Taskflow AI
+            ✦ Taskflow AI ✦
           </Typography>
           <Chip
             label={isConnected ? 'Connected' : 'Not Connected'}
@@ -245,10 +273,36 @@ function App() {
             }}
           />
           <IconButton onClick={toggleTheme} sx={{ color: '#ffffff' }}>
-            {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            {mode === 'dark' ? <SunIcon /> : <MoonIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>
+
+      {/* Backend unreachable banner */}
+      {backendDown && (
+        <Alert
+          severity="error"
+          icon={<WifiOffIcon />}
+          sx={{ borderRadius: 0, fontWeight: 600 }}
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              startIcon={<RefreshIcon />}
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          }
+        >
+          <AlertTitle sx={{ fontWeight: 700 }}>Backend unreachable</AlertTitle>
+          The API server on port 8000 is not responding. Run{' '}
+          <code style={{ background: 'rgba(0,0,0,0.15)', padding: '1px 6px', borderRadius: 4 }}>
+            uvicorn app.main:app --port 8000
+          </code>{' '}
+          in the <strong>backend/</strong> folder, then click Retry.
+        </Alert>
+      )}
 
       <Container maxWidth="xl" sx={{ py: 4, flex: 1 }}>
 
@@ -331,7 +385,7 @@ function App() {
               All tasks pushed!
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Your tasks are now live in Monday.com. Paste new meeting notes to start again.
+              Your tasks are now live in your project management tool. Paste new meeting notes to start again.
             </Typography>
           </Box>
         )}
@@ -339,8 +393,10 @@ function App() {
         {/* Task Preview Table */}
         {editableTasks.length > 0 && (
           <Box 
+            ref={tableRef}
             sx={{ 
               mb: 4,
+              scrollMarginTop: '80px',
               animation: 'fadeInUp 0.8s ease-out',
               '@keyframes fadeInUp': {
                 '0%': { transform: 'translateY(30px)', opacity: 0 },
@@ -397,7 +453,7 @@ function App() {
               },
             }}
           >
-            Tasks successfully created in Monday.com! 🎉
+            Tasks successfully created! 🎉
           </Alert>
         </Snackbar>
 

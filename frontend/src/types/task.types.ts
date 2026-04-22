@@ -3,6 +3,7 @@
  */
 
 export type PriorityLevel = 'Critical' | 'High' | 'Medium' | 'Low';
+export type StatusLevel = 'To Do' | 'In Progress' | 'Done' | 'Blocked';
 
 export interface Task {
   id: string;
@@ -11,6 +12,7 @@ export interface Task {
   owner?: string;
   due_date?: string;
   priority: PriorityLevel;
+  status: StatusLevel;
   confidence: number;
 }
 

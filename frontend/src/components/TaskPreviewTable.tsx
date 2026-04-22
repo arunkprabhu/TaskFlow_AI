@@ -24,6 +24,7 @@ import {
   CheckCircle as HighIcon,
   Circle as MediumIcon,
   RadioButtonUnchecked as LowIcon,
+  Warning as CriticalIcon,
 } from '@mui/icons-material';
 import type { Task, PriorityLevel } from '../types/task.types';
 
@@ -33,6 +34,7 @@ interface TaskPreviewTableProps {
 }
 
 const priorityIcons = {
+  Critical: <CriticalIcon sx={{ color: '#d32f2f' }} fontSize="small" />,
   High: <HighIcon color="error" fontSize="small" />,
   Medium: <MediumIcon color="warning" fontSize="small" />,
   Low: <LowIcon color="action" fontSize="small" />,
@@ -58,7 +60,7 @@ const TaskPreviewTable: React.FC<TaskPreviewTableProps> = ({
         ✅ Extracted Tasks ({tasks.length})
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Review and edit tasks before pushing to Monday.com
+        Review and edit tasks before pushing to your project management tool
       </Typography>
 
       <TableContainer>
@@ -150,6 +152,11 @@ const TaskPreviewTable: React.FC<TaskPreviewTableProps> = ({
                       }
                       variant="standard"
                     >
+                      <MenuItem value="Critical">
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {priorityIcons.Critical} Critical
+                        </Box>
+                      </MenuItem>
                       <MenuItem value="High">
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           {priorityIcons.High} High
@@ -169,6 +176,7 @@ const TaskPreviewTable: React.FC<TaskPreviewTableProps> = ({
                   </FormControl>
                 </TableCell>
 
+                {/* Confidence */}
                 <TableCell>
                   <Chip
                     label={`${Math.round(task.confidence * 100)}%`}

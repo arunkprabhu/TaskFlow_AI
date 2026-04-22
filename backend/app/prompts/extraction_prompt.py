@@ -5,16 +5,16 @@ AI prompt templates for task extraction
 
 TASK_EXTRACTION_PROMPT = """Extract tasks from notes. Return ONLY valid JSON.
 
-Find: TODO, Action, @names, "will", "should", "must", [ ], urgent, ASAP, critical, fix, create, update
+Find: TODO, Action, @names, "will", "should", "must", [ ], urgent, ASAP, critical, blocker, fix, create, update
 
 JSON format (no extra text):
 {{"tasks":[{{"title":"Action","description":"Details","owner":null,"due_date":null,"priority":"Medium","confidence":0.8}}]}}
 
 Rules:
 - title: verb + object (e.g., "Fix bug")
-- description: context from notes
+- description: context from notes or null
 - owner: name or null
-- priority: Critical/High/Medium/Low
+- priority: Critical (blocker/emergency)|High (urgent/ASAP)|Medium (default)|Low (later/optional)
 - due_date: YYYY-MM-DD or null (today=2026-04-22)
 - confidence: 0.6-1.0
 

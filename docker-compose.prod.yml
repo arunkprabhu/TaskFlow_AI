@@ -1,0 +1,92 @@
+version: '3.8'
+
+# Production docker-compose — no source mounts, no hot-reload
+# Images are pulled from GHCR or built locally with production Dockerfiles
+
+services:
+  backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/${GITHUB_REPOSITORY:-meetingtotask/meetingtotask}/backend:latest}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: meetingtotask-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - MONDAY_API_TOKEN=${MONDAY_API_TOKEN}
+      - MONDAY_BOARD_ID=${MONDAY_BOARD_ID}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://yourdomain.com}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    networks:
+      - meetingtotask
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/${GITHUB_REPOSITORY:-meetingtotask/meetingtotask}/frontend:latest}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=/api
+    container_name: meetingtotask-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - meetingtotask
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/nginx-health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meetingtotask-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - meetingtotask
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Optional: pull the default model on first start
+  ollama-init:
+    image: curlimages/curl:latest
+    container_name: meetingtotask-ollama-init
+    networks:
+      - meetingtotask
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "curl -s -X POST http://ollama:11434/api/pull -d '{\"name\":\"llama3.2:1b\"}'"
+    restart: "no"
+
+networks:
+  meetingtotask:
+    driver: bridge
+
+volumes:
+  ollama_data:

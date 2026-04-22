@@ -104,11 +104,11 @@ const ConnectionCheckModal: React.FC<ConnectionCheckModalProps> = ({ open, onCon
 
           {/* Description */}
           <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
-            Connect your <strong>Monday.com</strong> account to start converting meeting notes into actionable tasks.
+            Connect your <strong>project management tool</strong> to start converting meeting notes into actionable tasks.
           </Typography>
 
           <Typography variant="caption" color="text.secondary" sx={{ maxWidth: 400, fontStyle: 'italic' }}>
-            (Other project management tools coming soon)
+            Supports Monday.com — Jira, Asana, Trello & ClickUp coming soon
           </Typography>
 
           {/* Connect Button */}

@@ -1,29 +1,38 @@
 version: '3.8'
 
+# Development docker-compose — hot-reload, source mounts, no auth required
+# For production use:  docker compose -f docker-compose.prod.yml up -d
+
 services:
-  # Backend FastAPI service
   backend:
-    build: ./backend
-    container_name: meetingtotask-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production          # still uses the same Dockerfile
+    container_name: meetingtotask-backend-dev
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend:/app             # mount source for hot-reload
     environment:
-      - OLLAMA_BASE_URL=http://host.docker.internal:11434
-      - MONDAY_API_TOKEN=${MONDAY_API_TOKEN}
-      - MONDAY_BOARD_ID=${MONDAY_BOARD_ID}
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - MONDAY_API_TOKEN=${MONDAY_API_TOKEN:-}
+      - MONDAY_BOARD_ID=${MONDAY_BOARD_ID:-}
       - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+      - ENVIRONMENT=development
+      - LOG_LEVEL=debug
     networks:
       - meetingtotask
     depends_on:
       - ollama
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Frontend React service
   frontend:
-    build: ./frontend
-    container_name: meetingtotask-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: builder              # builder stage has dev server
+    container_name: meetingtotask-frontend-dev
     ports:
       - "5173:5173"
     volumes:
@@ -37,7 +46,6 @@ services:
       - backend
     command: npm run dev -- --host
 
-  # Ollama service (optional - can use local installation)
   ollama:
     image: ollama/ollama:latest
     container_name: meetingtotask-ollama

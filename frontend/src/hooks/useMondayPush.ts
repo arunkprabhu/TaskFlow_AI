@@ -30,11 +30,11 @@ export const useMondayPush = (): UseMondayPushResult => {
     setSuccess(false);
 
     try {
-      // Get API token from localStorage
-      const credentials = localStorage.getItem('pm_tool_credentials');
+      // Resolve API token — try pm_tool_credentials first, then direct MONDAY_API_TOKEN key
       let apiToken = '';
       let defaultBoardId = boardId;
 
+      const credentials = localStorage.getItem('pm_tool_credentials');
       if (credentials) {
         try {
           const creds = JSON.parse(credentials);
@@ -45,8 +45,16 @@ export const useMondayPush = (): UseMondayPushResult => {
         }
       }
 
+      // Fallback: token saved directly (e.g. after re-opening the modal)
       if (!apiToken) {
-        setError('Please connect your Monday.com account first in the connection modal.');
+        apiToken = localStorage.getItem('MONDAY_API_TOKEN') || '';
+      }
+      if (!defaultBoardId) {
+        defaultBoardId = localStorage.getItem('MONDAY_BOARD_ID') || boardId;
+      }
+
+      if (!apiToken) {
+        setError('API token not found. Please reconnect your account via the Connect button.');
         setIsLoading(false);
         return;
       }
@@ -62,14 +70,16 @@ export const useMondayPush = (): UseMondayPushResult => {
       if (response.success) {
         setSuccess(true);
       } else {
-        setError(response.errors[0]?.message || 'Failed to create some tasks');
+        const msg = response.errors?.[0]?.message || 'Some tasks could not be created.';
+        setError(msg);
       }
     } catch (err: any) {
       console.error('Monday.com push failed:', err);
-      setError(
+      const detail =
         err.response?.data?.detail ||
-          'Failed to push tasks to Monday.com. Check your API token and board ID.'
-      );
+        err.message ||
+        'Unknown error';
+      setError(`Push failed: ${detail}`);
     } finally {
       setIsLoading(false);
     }

@@ -260,17 +260,26 @@ class MondayClient:
                 column_values[col_id] = {"text": task.description}
             else:
                 column_values[col_id] = task.description
+            logger.info(f"Description set in column {col_id} (type: {col_type})")
+        elif task.description:
+            logger.warning(f"Task has description but no description column mapped")
 
         # ── Due Date ─────────────────────────────────
         if task.due_date and column_mapping.get("due_date"):
             col_id = column_mapping["due_date"]
             column_values[col_id] = {"date": task.due_date}
+            logger.info(f"Due date set: {task.due_date}")
+        elif task.due_date:
+            logger.warning(f"Task has due_date but no due_date column mapped")
 
         # ── Priority ─────────────────────────────────
         if column_mapping.get("priority"):
             col_id = column_mapping["priority"]
-            our_priority = task.priority.value  # "Critical", "High", "Medium", "Low"
+            # Handle both enum and string values
+            our_priority = task.priority.value if hasattr(task.priority, 'value') else str(task.priority)
             available = column_mapping.get("priority_labels", [])
+            
+            logger.info(f"Setting priority: {our_priority} (available labels: {available})")
 
             # Try to find a matching label (case-insensitive)
             matched_label = None
@@ -288,22 +297,24 @@ class MondayClient:
 
             if matched_label:
                 column_values[col_id] = {"label": matched_label}
+                logger.info(f"Priority matched to label: {matched_label}")
             elif available:
-                # Map by severity rank: Critical/High→first, Low→last, Medium→middle
-                rank_map = {"Critical": 0, "High": 0, "Medium": len(available) // 2, "Low": len(available) - 1}
-                idx = rank_map.get(our_priority, 0)
-                idx = min(idx, len(available) - 1)
+                # Map by severity rank: Critical→first, High→second, Medium→middle, Low→last
+                rank_map = {"Critical": 0, "High": 1, "Medium": len(available) // 2, "Low": len(available) - 1}
+                idx = rank_map.get(our_priority, len(available) // 2)
+                idx = min(max(0, idx), len(available) - 1)
                 column_values[col_id] = {"label": available[idx]}
+                logger.info(f"Priority mapped by rank to: {available[idx]}")
             else:
-                # No label info — skip to avoid API errors
-                logger.info(f"Skipping priority column — no label info available")
+                # No label info — try index-based fallback
+                rank_index = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}.get(our_priority, 2)
+                column_values[col_id] = {"index": rank_index}
+                logger.info(f"Priority set by index: {rank_index}")
 
         # ── Status ───────────────────────────────────
-        if column_mapping.get("status"):
-            col_id = column_mapping["status"]
-            # Use index 0 (first status = "Working on it" or equivalent)
-            # This works regardless of what the board's status labels are called
-            column_values[col_id] = {"index": 0}
+        # Leave status empty — let Monday.com use its default
+        # (do not set the status column at all)
+
 
         # ── Assignee (People column) ──────────────────
         if column_mapping.get("assignee"):
@@ -312,10 +323,13 @@ class MondayClient:
                 column_values[col_id] = {
                     "personsAndTeams": [{"id": assignee_id, "kind": "person"}]
                 }
+                logger.info(f"Assignee set: {task.owner} (ID: {assignee_id})")
             elif task.owner:
                 # Fallback: store owner name as text if no person ID was resolved
                 # (only works for text-type columns, skipped for people columns)
-                logger.info(f"Could not resolve user ID for '{task.owner}', skipping people column")
+                logger.warning(f"Could not resolve user ID for '{task.owner}', skipping people column")
+        elif task.owner:
+            logger.warning(f"Task has owner but no assignee column mapped")
 
         return json.dumps(column_values) if column_values else "{}"
     

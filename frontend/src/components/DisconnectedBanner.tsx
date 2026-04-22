@@ -123,7 +123,7 @@ const DisconnectedBanner: React.FC<DisconnectedBannerProps> = ({ onConnect }) =>
         color="text.secondary"
         sx={{ textAlign: 'center', maxWidth: 380 }}
       >
-        Connect your Monday.com account to start pushing tasks.
+        Connect your project management tool to start pushing tasks.
         <br />
         Your API key is required to continue.
       </Typography>

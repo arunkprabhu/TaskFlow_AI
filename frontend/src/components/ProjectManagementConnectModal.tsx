@@ -31,6 +31,8 @@ import {
   CheckCircle as CheckCircleIcon,
   DeleteForever as ClearIcon,
   WifiTethering as TestIcon,
+  RocketLaunch as RocketIcon,
+  Construction as ConstructionIcon,
 } from '@mui/icons-material';
 
 interface TabPanelProps {
@@ -60,6 +62,125 @@ interface ProjectManagementConnectModalProps {
   onClose: () => void;
   onConnect: (tool: string, credentials: any) => void;
 }
+
+// ── Coming Soon panel ────────────────────────────────────────────────────────
+interface ComingSoonPanelProps {
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
+const ComingSoonPanel: React.FC<ComingSoonPanelProps> = ({ name, icon, color }) => {
+  const theme = useTheme();
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: 6,
+        gap: 3,
+        textAlign: 'center',
+      }}
+    >
+      {/* Animated icon bubble */}
+      <Box
+        sx={{
+          width: 120,
+          height: 120,
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: `${color}18`,
+          border: `3px solid ${color}40`,
+          animation: 'pulseRing 2.5s ease-in-out infinite',
+          '@keyframes pulseRing': {
+            '0%, 100%': { boxShadow: `0 0 0 0 ${color}50` },
+            '50%': { boxShadow: `0 0 0 18px ${color}00` },
+          },
+          '& .MuiSvgIcon-root': { fontSize: 56, color },
+        }}
+      >
+        {icon}
+      </Box>
+
+      {/* Badge */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          px: 2.5,
+          py: 0.8,
+          borderRadius: 99,
+          background: 'linear-gradient(135deg, #f97316, #a855f7)',
+          boxShadow: '0 4px 18px rgba(168,85,247,0.4)',
+        }}
+      >
+        <ConstructionIcon sx={{ fontSize: 18, color: '#fff' }} />
+        <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '1px' }}>
+          IN DEVELOPMENT
+        </Typography>
+      </Box>
+
+      {/* Title */}
+      <Typography
+        variant="h5"
+        fontWeight={800}
+        sx={{
+          background: `linear-gradient(135deg, ${color}, #a855f7)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}
+      >
+        {name} Integration — Coming Soon
+      </Typography>
+
+      {/* Description */}
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        sx={{ maxWidth: 420, lineHeight: 1.8 }}
+      >
+        We're actively building the <strong>{name}</strong> integration. It will let you push extracted tasks directly into your {name} workspace with full field mapping.
+      </Typography>
+
+      {/* Feature chips */}
+      <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center', mt: 1 }}>
+        {['Auto task creation', 'Field mapping', 'Priority sync', 'Due date sync', 'Assignee mapping'].map((feat) => (
+          <Box
+            key={feat}
+            sx={{
+              px: 2,
+              py: 0.6,
+              borderRadius: 99,
+              border: `1.5px solid ${theme.palette.mode === 'light' ? '#e2e8f0' : '#334155'}`,
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              color: 'text.secondary',
+              background: theme.palette.mode === 'light' ? 'rgba(248,250,252,0.9)' : 'rgba(30,41,59,0.9)',
+            }}
+          >
+            ✓ {feat}
+          </Box>
+        ))}
+      </Box>
+
+      {/* Rocket CTA */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1, opacity: 0.55 }}>
+        <RocketIcon sx={{ fontSize: 18 }} />
+        <Typography variant="caption" fontWeight={600}>
+          Stay tuned — we ship fast!
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+// ── Main modal ───────────────────────────────────────────────────────────────
 
 const ProjectManagementConnectModal: React.FC<ProjectManagementConnectModalProps> = ({
   open,
@@ -245,15 +366,14 @@ const ProjectManagementConnectModal: React.FC<ProjectManagementConnectModalProps
                 <Box>
                   <div>{tool.name}</div>
                   {index !== 0 && (
-                    <Typography variant="caption" sx={{ fontSize: '0.7rem', opacity: 0.7 }}>
-                      Coming Soon
+                    <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.75, fontWeight: 700, letterSpacing: '0.5px' }}>
+                      IN DEV
                     </Typography>
                   )}
                 </Box>
               }
               id={`pm-tab-${index}`}
               iconPosition="start"
-              disabled={index !== 0}
               sx={{
                 '& .MuiSvgIcon-root': {
                   fontSize: 28,
@@ -301,15 +421,6 @@ const ProjectManagementConnectModal: React.FC<ProjectManagementConnectModalProps
                   </InputAdornment>
                 ),
               }}
-            />
-
-            <TextField
-              fullWidth
-              label="Board ID (Optional)"
-              value={credentials.monday.boardId}
-              onChange={(e) => handleCredentialChange('monday', 'boardId', e.target.value)}
-              variant="outlined"
-              helperText="Leave empty to select board when pushing tasks"
             />
 
             {/* Test status feedback */}
@@ -360,66 +471,22 @@ const ProjectManagementConnectModal: React.FC<ProjectManagementConnectModalProps
 
         {/* Jira Tab */}
         <TabPanel value={currentTab} index={1}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', py: 8 }}>
-            <JiraIcon sx={{ fontSize: 80, color: '#0052CC', opacity: 0.5 }} />
-            <Typography variant="h5" fontWeight="bold" color="text.secondary">
-              Jira Integration
-            </Typography>
-            <Alert severity="info" sx={{ maxWidth: 500 }}>
-              Jira integration is coming soon! We're working hard to bring you seamless project management integration.
-            </Alert>
-            <Typography variant="body2" color="text.secondary">
-              Stay tuned for updates!
-            </Typography>
-          </Box>
+          <ComingSoonPanel name="Jira" icon={<JiraIcon />} color="#0052CC" />
         </TabPanel>
 
         {/* Asana Tab */}
         <TabPanel value={currentTab} index={2}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', py: 8 }}>
-            <AsanaIcon sx={{ fontSize: 80, color: '#F06A6A', opacity: 0.5 }} />
-            <Typography variant="h5" fontWeight="bold" color="text.secondary">
-              Asana Integration
-            </Typography>
-            <Alert severity="info" sx={{ maxWidth: 500 }}>
-              Asana integration is coming soon! We're working hard to bring you seamless project management integration.
-            </Alert>
-            <Typography variant="body2" color="text.secondary">
-              Stay tuned for updates!
-            </Typography>
-          </Box>
+          <ComingSoonPanel name="Asana" icon={<AsanaIcon />} color="#F06A6A" />
         </TabPanel>
 
         {/* Trello Tab */}
         <TabPanel value={currentTab} index={3}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', py: 8 }}>
-            <TrelloIcon sx={{ fontSize: 80, color: '#0079BF', opacity: 0.5 }} />
-            <Typography variant="h5" fontWeight="bold" color="text.secondary">
-              Trello Integration
-            </Typography>
-            <Alert severity="info" sx={{ maxWidth: 500 }}>
-              Trello integration is coming soon! We're working hard to bring you seamless project management integration.
-            </Alert>
-            <Typography variant="body2" color="text.secondary">
-              Stay tuned for updates!
-            </Typography>
-          </Box>
+          <ComingSoonPanel name="Trello" icon={<TrelloIcon />} color="#0079BF" />
         </TabPanel>
 
         {/* ClickUp Tab */}
         <TabPanel value={currentTab} index={4}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', py: 8 }}>
-            <ClickUpIcon sx={{ fontSize: 80, color: '#7B68EE', opacity: 0.5 }} />
-            <Typography variant="h5" fontWeight="bold" color="text.secondary">
-              ClickUp Integration
-            </Typography>
-            <Alert severity="info" sx={{ maxWidth: 500 }}>
-              ClickUp integration is coming soon! We're working hard to bring you seamless project management integration.
-            </Alert>
-            <Typography variant="body2" color="text.secondary">
-              Stay tuned for updates!
-            </Typography>
-          </Box>
+          <ComingSoonPanel name="ClickUp" icon={<ClickUpIcon />} color="#7B68EE" />
         </TabPanel>
       </DialogContent>
     </Dialog>

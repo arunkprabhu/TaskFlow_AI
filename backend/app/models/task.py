@@ -30,6 +30,7 @@ class ExtractedTask(TaskBase):
     """Task extracted by AI with confidence score"""
     id: str = Field(default_factory=lambda: str(uuid4()))
     confidence: float = Field(0.0, ge=0.0, le=1.0)
+    status: str = Field(default="To Do")
 
 
 class TaskExtractionRequest(BaseModel):

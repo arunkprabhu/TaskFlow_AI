@@ -37,10 +37,14 @@ class TaskProcessor:
                 # Clean description
                 if task.description:
                     task.description = task.description.strip()
+                    if len(task.description) == 0:
+                        task.description = None
                 
                 # Clean owner
                 if task.owner:
                     task.owner = task.owner.strip()
+                    if len(task.owner) == 0:
+                        task.owner = None
                 
                 # Validate due date format
                 if task.due_date:

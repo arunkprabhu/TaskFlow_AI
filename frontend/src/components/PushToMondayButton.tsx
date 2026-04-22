@@ -52,12 +52,30 @@ const PushToMondayButton: React.FC<PushToMondayButtonProps> = ({
     <>
       <Button
         variant="contained"
-        color="success"
         size="large"
         onClick={handleOpen}
         disabled={disabled}
         startIcon={<UploadIcon />}
-        sx={{ minWidth: 200 }}
+        sx={{
+          minWidth: 220,
+          fontWeight: 700,
+          letterSpacing: 0.5,
+          borderRadius: 2.5,
+          background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+          boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%)',
+            boxShadow: '0 6px 20px rgba(16, 185, 129, 0.55)',
+            transform: 'translateY(-1px)',
+          },
+          '&:active': { transform: 'translateY(0)' },
+          '&.Mui-disabled': {
+            background: 'linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%)',
+            boxShadow: 'none',
+            color: '#fff',
+          },
+          transition: 'all 0.2s ease',
+        }}
       >
         Push to Monday.com
       </Button>
@@ -90,14 +108,38 @@ const PushToMondayButton: React.FC<PushToMondayButtonProps> = ({
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleClose} disabled={isLoading}>
+          <Button
+            variant="text"
+            onClick={handleClose}
+            disabled={isLoading}
+            sx={{ fontWeight: 600, color: 'text.secondary', '&:hover': { color: '#ef4444', background: 'rgba(239,68,68,0.08)' } }}
+          >
             Cancel
           </Button>
           <Button
             variant="contained"
             onClick={handlePush}
             disabled={!boardId.trim() || isLoading}
-            startIcon={isLoading && <CircularProgress size={20} />}
+            startIcon={isLoading && <CircularProgress size={20} sx={{ color: '#fff' }} />}
+            sx={{
+              fontWeight: 700,
+              letterSpacing: 0.5,
+              borderRadius: 2.5,
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%)',
+                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.55)',
+                transform: 'translateY(-1px)',
+              },
+              '&:active': { transform: 'translateY(0)' },
+              '&.Mui-disabled': {
+                background: 'linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%)',
+                boxShadow: 'none',
+                color: '#fff',
+              },
+              transition: 'all 0.2s ease',
+            }}
           >
             {isLoading ? 'Creating...' : 'Create Tasks'}
           </Button>
