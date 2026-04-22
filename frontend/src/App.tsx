@@ -2,7 +2,7 @@
  * Main Application Component
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Box,
@@ -43,7 +43,7 @@ function App() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [editableTasks, setEditableTasks] = useState<Task[]>([]);
   const [pushedSuccessfully, setPushedSuccessfully] = useState<boolean>(false);
-  const [healthStatus, setHealthStatus] = useState<string>('unknown');
+  const [_healthStatus, setHealthStatus] = useState<string>('unknown');
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [hasApiKey, setHasApiKey] = useState<boolean>(!!localStorage.getItem('MONDAY_API_TOKEN'));
   const [showConnectionCheck, setShowConnectionCheck] = useState<boolean>(false);
