@@ -1,0 +1,25 @@
+Q2 2026 DEVELOPMENT CHECKLIST
+
+Backend Tasks:
+[ ] Optimize database queries for the reports module - currently taking 15+ seconds to load
+[ ] Set up automated backups for user data - configure daily snapshots with 30-day retention
+[ ] Implement rate limiting on API endpoints - prevent abuse and DDoS attacks (Jake - by April 25)
+[x] Migrate to new hosting provider
+[x] Update SSL certificates
+
+Frontend Tasks:
+[ ] Add loading spinners to all async operations - improve user experience during data fetching
+[ ] Fix responsive layout issues on tablet devices - test on iPad and Android tablets
+[ ] Implement accessibility improvements - add ARIA labels, keyboard navigation, screen reader support (Emma - high priority)
+[x] Upgrade React to latest version
+
+DevOps:
+[ ] Configure CI/CD pipeline for automated testing and deployment - integrate with GitHub Actions
+[ ] Set up monitoring alerts for server downtime - use PagerDuty or similar service (Chris)
+[ ] Create Docker containers for local development environment - standardize team setup
+[x] Documentation for deployment process
+
+Security:
+[ ] Conduct penetration testing on production environment - hire external security firm if needed (URGENT)
+[ ] Update all dependencies to patch known vulnerabilities - prioritize critical security issues
+[ ] Enable two-factor authentication for admin accounts - use TOTP or SMS verification

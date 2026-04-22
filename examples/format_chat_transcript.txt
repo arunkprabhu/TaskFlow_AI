@@ -1,0 +1,21 @@
+Slack #engineering Channel - April 22, 2026
+
+@alex (9:15 AM): Hey team, the payment gateway integration is failing in production
+
+@sarah (9:17 AM): I can look into it. Need to debug the webhook handler and check the API credentials
+
+@mike (9:20 AM): Also we should upgrade the Node.js version to v20. Current version is deprecated and has security issues
+
+@jenny (9:25 AM): @sarah can you also create a monitoring dashboard for payment transactions? We need visibility into success rates and failures
+
+@sarah (9:27 AM): Sure, I'll add that to my list
+
+@alex (9:30 AM): Critical issue - users are reporting that file downloads are corrupted. @mike can you investigate ASAP?
+
+@mike (9:32 AM): On it. Probably related to the CDN migration last week
+
+@lisa (9:45 AM): Don't forget we need to prepare the demo for the client meeting Friday. Someone should set up the staging data and test all features thoroughly
+
+@jenny (9:50 AM): I'll write the release notes for version 2.5. Should include new features, bug fixes, and breaking changes
+
+@alex (10:00 AM): @team remember to submit timesheets by EOD. Also schedule code review sessions for next week's PRs

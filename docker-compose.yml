@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Backend FastAPI service
+  backend:
+    build: ./backend
+    container_name: meetingtotask-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - MONDAY_API_TOKEN=${MONDAY_API_TOKEN}
+      - MONDAY_BOARD_ID=${MONDAY_BOARD_ID}
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+    networks:
+      - meetingtotask
+    depends_on:
+      - ollama
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend React service
+  frontend:
+    build: ./frontend
+    container_name: meetingtotask-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    networks:
+      - meetingtotask
+    depends_on:
+      - backend
+    command: npm run dev -- --host
+
+  # Ollama service (optional - can use local installation)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meetingtotask-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - meetingtotask
+
+networks:
+  meetingtotask:
+    driver: bridge
+
+volumes:
+  ollama_data:

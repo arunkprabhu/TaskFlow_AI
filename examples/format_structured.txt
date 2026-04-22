@@ -1,0 +1,47 @@
+SPRINT RETROSPECTIVE - APRIL 22, 2026
+=====================================
+
+TEAM: Engineering
+SPRINT: 2026-S8
+ATTENDEES: Alex, Sarah, Mike, Jenny, Lisa
+
+--- ACTION ITEMS ---
+
+[CRITICAL - Alex]
+Title: Fix memory leak in background job processor
+Details: Causing server crashes every 6 hours in production. Affects job queue and email sending. Need root cause analysis and permanent fix.
+Deadline: April 23, 2026
+Status: NOT STARTED
+
+[HIGH - Sarah] 
+Title: Implement caching layer for product catalog
+Details: Use Redis to cache frequently accessed product data. Reduce database load by 60%. Configure TTL and cache invalidation strategy.
+Deadline: April 28, 2026
+Status: IN PROGRESS
+
+[MEDIUM - Mike]
+Title: Create automated test suite for checkout flow
+Details: Cover happy path, edge cases, and error scenarios. Include payment processing, inventory updates, and email confirmations. Achieve 80% code coverage.
+Deadline: May 5, 2026
+Status: NOT STARTED
+
+[MEDIUM - Jenny]
+Title: Update API documentation with new endpoints
+Details: Document the v3 API changes including new authentication method, webhook events, and pagination parameters. Add code examples in Python and JavaScript.
+Deadline: April 30, 2026
+Status: NOT STARTED
+
+[LOW - Lisa]
+Title: Refactor legacy CSS to use CSS modules
+Details: Modernize styling approach to prevent class name conflicts. Start with main dashboard components then expand to other pages.
+Deadline: May 15, 2026
+Status: NOT STARTED
+
+--- DECISIONS MADE ---
+- Moving to weekly deployments starting next sprint
+- Adopting TypeScript for all new frontend code
+- Implementing feature flags for gradual rollouts
+
+--- BLOCKERS ---
+- Waiting for design approval on mobile navigation
+- Third-party API documentation still incomplete

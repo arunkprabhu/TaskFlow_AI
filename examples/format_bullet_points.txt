@@ -1,0 +1,21 @@
+PROJECT SYNC - APRIL 2026
+
+COMPLETED:
+• Finished user research interviews
+• Deployed hotfix for email notifications
+
+PENDING TASKS:
+
+• Fix the broken image upload feature - affects all user profiles, needs immediate attention (Alex)
+
+• Create wireframes for the new dashboard redesign - include mobile and desktop versions, share with design team for feedback (Jenny - due April 30)
+
+• Update database schema to support multi-language content - plan migration strategy, test on staging first
+
+• Implement OAuth2 authentication - replace current token system, update API docs (Mark - high priority)
+
+• Schedule user testing sessions for next sprint - recruit 10 participants, prepare test scenarios (Lisa)
+
+NOTES:
+• Budget approval needed for cloud infrastructure upgrade
+• Next all-hands meeting moved to May 1st

@@ -1,0 +1,13 @@
+Meeting: Sprint Planning & Action Items
+Date: April 22, 2026
+Attendees: Kevin, Arun, Naveen, Harshita
+Notes:
+
+Kevin reviewed the current sprint status and mentioned that most UI‑related work has been completed.
+Arun confirmed that the Security Hardening & Input Validation theme is done and PRs have already been created.
+Naveen highlighted an issue with API route duplication and suggested consolidating middleware before the next release.
+Kevin asked the team to prioritize fixing CORE – 3161 and CORE – DA 4949 issues by end of day tomorrow.
+Harshita will continue testing the Front Window module and log any new bugs found.
+Arun needs to integrate the AI Team feature into the workflow documentation by Friday.
+Kevin requested that all completed tasks be moved to Closed status and corresponding PRs linked.
+Next meeting is scheduled for Thursday to review deployment readiness.

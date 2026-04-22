@@ -1,0 +1,23 @@
+# Product Meeting - April 22, 2026
+
+## Discussion Points
+
+We discussed the new user authentication system. Sarah mentioned that the current login flow is confusing for first-time users and needs to be redesigned with a clearer onboarding process.
+
+## Action Items
+
+- Fix the payment processing bug that's affecting checkout. This is critical and needs to be resolved by tomorrow. The bug causes transactions to fail when users apply discount codes.
+
+- John will create comprehensive API documentation for the new endpoints. Include authentication examples, rate limiting info, and error handling. Due by Friday.
+
+- Update the mobile app to support dark mode. Users have been requesting this feature. Sarah is assigned to this task.
+
+## Feature Requests
+
+We need to implement real-time notifications for chat messages. This should include push notifications on mobile and desktop alerts. Mark this as high priority since it's blocking the chat feature launch.
+
+Someone should investigate why the database queries are slow on the reporting page. Check indexing and query optimization.
+
+## Next Steps
+
+Schedule a follow-up meeting next week to review progress. We also need to prepare the Q2 roadmap presentation for stakeholders.
